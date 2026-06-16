@@ -2,6 +2,8 @@
 
 A unified campus intelligence dashboard for IIT Roorkee that combines a modern Next.js frontend, an Express-based orchestrator, and independent MCP servers for library, cafeteria, events, and academics. The AI assistant routes user questions to the right campus source in real time and streams the answer back to the browser.
 
+(Since the services are hosted on render, there is cold start problem, in that case to acess you have to run the each MCP services to make them online)
+
 ![Next.js](https://img.shields.io/badge/Next.js-15-black) ![Node.js](https://img.shields.io/badge/Node.js-18%2B-green) ![Python](https://img.shields.io/badge/Python-3.10%2B-blue) ![Groq](https://img.shields.io/badge/Groq-Llama%203.3-orange)
 
 ---
