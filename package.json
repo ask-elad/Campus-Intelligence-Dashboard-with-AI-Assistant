@@ -1,0 +1,12 @@
+{
+  "name": "campus-intelligence",
+  "version": "1.0.0",
+  "description": "Unified Campus Intelligence Dashboard — IIT Roorkee",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix orchestrator && npm install --prefix mcp-servers/library-server && npm install --prefix mcp-servers/events-server && pip install -r mcp-servers/cafeteria-server/requirements.txt && pip install -r mcp-servers/academics-server/requirements.txt && npm install --prefix frontend",
+    "build:mcp:node": "npm run build --prefix mcp-servers/library-server && npm run build --prefix mcp-servers/events-server",
+    "build:orchestrator": "npm run build --prefix orchestrator",
+    "build:all": "npm run build:mcp:node && npm run build:orchestrator"
+  }
+}
