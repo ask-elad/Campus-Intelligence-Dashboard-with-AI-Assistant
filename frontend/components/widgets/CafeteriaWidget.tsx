@@ -19,11 +19,31 @@ export function CafeteriaWidget() {
     else if (hr < 15) setMealTab("lunch");
     else setMealTab("dinner");
 
-    fetch("/api/cafeteria/today").then(r => r.json()).then(d => { setTodayMenu(d); setLoading(false); }).catch(() => setLoading(false));
+    fetch("/api/cafeteria/today")
+    .then(async (r) => {
+      if (!r.ok) {
+        throw new Error(`HTTP ${r.status}`);
+      }
+
+      const data = await r.json();
+
+      if (!data?.menu) {
+        throw new Error("Invalid menu response");
+      }
+
+      setTodayMenu(data);
+    })
+    .catch((err) => {
+      console.error("Failed to load cafeteria menu:", err);
+      setTodayMenu(null);
+    })
+    .finally(() => {
+      setLoading(false);
+    });
     fetch("/api/cafeteria/eateries").then(r => r.json()).then(d => setEateries(d.eateries || [])).catch(() => {});
   }, []);
 
-  const mealData = todayMenu?.menu[mealTab];
+  const mealData = todayMenu?.menu?.[mealTab];
   const allItems = [...(mealData?.specialItems || []), ...(mealData?.dailyItems || [])];
 
   const priceColor: Record<string, string> = { "₹": "var(--green)", "₹₹": "var(--amber)", "₹₹₹": "var(--red)" };
