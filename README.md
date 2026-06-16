@@ -34,7 +34,8 @@ A unified campus intelligence dashboard for IIT Roorkee that combines a modern N
 
 ### Demo Video
 
-**Video URL:** `https://your-demo-video-link-here`
+**Video URL:** - https://drive.google.com/drive/u/0/folders/1RNVrBXbbFOY0wRM0fAylkNWPNnqcO23g
+
 
  ---
 
