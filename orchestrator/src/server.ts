@@ -195,7 +195,7 @@ app.get("/api/academics/holidays", async (_req, res) => {
 // ---- Boot ----
 async function boot() {
   await initializeMcpClients();
-  //startHealthCheckLoop();
+  startHealthCheckLoop();
 
   app.listen(PORT, () => {
     console.log(`\n🚀 Campus Intelligence Orchestrator running on http://localhost:${PORT}`);
