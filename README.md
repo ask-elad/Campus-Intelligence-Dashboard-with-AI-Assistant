@@ -6,6 +6,38 @@ A unified campus intelligence dashboard for IIT Roorkee that combines a modern N
 
 ---
 
+## Deployment
+
+### Frontend
+
+**Deployment URL:**  
+[Campus Pulse Dashboard](https://campus-intelligence-dashboard-wit-git-ff24fc-ask-elads-projects.vercel.app/)
+
+### Orchestrator
+
+**Deployment URL:**  
+[Campus Intelligence Orchestrator](https://campus-intelligence-dashboard-with-ai-ka6v.onrender.com)
+
+#### MCP Servers
+
+- **Library MCP Server:**  
+  https://campus-intelligence-dashboard-with-ai.onrender.com
+
+- **Events MCP Server:**  
+  https://campus-intelligence-dashboard-with-ai-wyzl.onrender.com
+
+- **Cafeteria MCP Server:**  
+  https://campus-intelligence-dashboard-with-ai-f5nb.onrender.com
+
+- **Academics MCP Server:**  
+  https://campus-intelligence-dashboard-with-ai-3b5w.onrender.com
+
+### Demo Video
+
+**Video URL:** `https://your-demo-video-link-here`
+
+ ---
+
 ## Overview
 
 Campus Pulse is designed around the idea that campus data should stay close to the source. Instead of merging everything into one large database, each campus domain is served by its own MCP server. The orchestrator connects to those servers, discovers available tools, and decides which server(s) to query based on the student’s request.
@@ -261,22 +293,6 @@ http://localhost:3000
 5. Ask about upcoming events or festivals.
 6. Ask about holidays or academic rules.
 7. Open the AI assistant and show live tool calls in the conversation.
-
----
-
-## Deployment
-
-### Frontend
-
-**Deployment URL:** `https://your-frontend-deployment-link-here`
-
-### Orchestrator
-
-**Deployment URL:** `https://your-orchestrator-deployment-link-here`
-
-### Demo Video
-
-**Video URL:** `https://your-demo-video-link-here`
 
 ---
 
