@@ -1,0 +1,27 @@
+{
+  "libraryName": "Mahatma Gandhi Central Library (MGCL)",
+  "institution": "Indian Institute of Technology, Roorkee",
+  "established": {
+    "year": "1848",
+    "note": "The library's own site is internally inconsistent: page metadata states 1848, while the History section body text says the original College Library was established in 1847."
+  },
+  "building": {
+    "areaSqFt": "80,000",
+    "floors": 3,
+    "features": [
+      "Centrally air-conditioned",
+      "RFID technology for self-service circulation",
+      "Wi-Fi enabled on all floors",
+      "200+ networked computers",
+      "Designed for approx. 500 concurrent users"
+    ]
+  },
+  "hours": {
+    "generalSection": "07:00 AM - 12:00 PM (Monday to Sunday)"
+    },
+  "contact": {
+    "email": "library@iitr.ac.in",
+    "phone": "+91-1332-285239",
+    "address": "Indian Institute of Technology, Roorkee, Roorkee, Uttarakhand - 247667, India"
+  }
+}
