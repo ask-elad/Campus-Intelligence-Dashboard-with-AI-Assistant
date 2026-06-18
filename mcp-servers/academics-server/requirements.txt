@@ -1,0 +1,8 @@
+fastmcp
+requests
+pdfplumber
+langchain-core
+langchain-google-genai
+langchain-chroma
+chromadb
+python-dotenv
