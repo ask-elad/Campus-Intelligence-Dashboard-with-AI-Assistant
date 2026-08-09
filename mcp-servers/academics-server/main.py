@@ -10,8 +10,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 PROJECT_ROOT = Path(__file__).resolve().parent
 load_dotenv(PROJECT_ROOT / ".env")
 
-sys.path.insert(0, str(PROJECT_ROOT / "scrapper"))
-from branch_aliases import resolve_branch  # noqa: E402
+from scrapper.branch_aliases import resolve_branch
 
 CHROMA_DIR = PROJECT_ROOT / "data" / "chroma_db"
 COLLECTION_NAME = "program_structures"
