@@ -30,8 +30,6 @@ async function connectOneServer(server: McpServerConfig): Promise<DiscoveredTool
 
     const discovered: DiscoveredTool[] = [];
     for (const tool of tools) {
-      // Register this tool in the routing table so the agent loop can
-      // later find which client to call it on, given just its name.
       toolRoutingTable.set(tool.name, client);
 
       discovered.push({
@@ -58,4 +56,26 @@ export async function connectAllServers(): Promise<DiscoveredTool[]> {
   console.log("Connecting to all MCP servers...\n");
   const results = await Promise.all(SERVERS.map(connectOneServer));
   return results.flat();
+}
+
+/**
+ * Calls a tool on whichever MCP server owns it (via toolRoutingTable),
+ * and returns its raw text content, joined. Throws if the tool name is
+ * unknown or the call fails — callers decide how to handle that
+ * (agent.ts catches and returns an error string to the LLM; the
+ * dashboard routes catch and return an HTTP error).
+ */
+export async function callMcpTool(
+  toolName: string,
+  args: Record<string, unknown>
+): Promise<string> {
+  const client = toolRoutingTable.get(toolName);
+  if (!client) {
+    throw new Error(`No server found for tool "${toolName}"`);
+  }
+
+  const result = await client.callTool({ name: toolName, arguments: args });
+  const content = result.content as Array<{ type: string; text?: string }>;
+  const textParts = content.filter((c) => c.type === "text").map((c) => c.text ?? "");
+  return textParts.join("\n");
 }
