@@ -1,2 +1,4 @@
 .env
 raw_pdfs
+__pycache__
+venv

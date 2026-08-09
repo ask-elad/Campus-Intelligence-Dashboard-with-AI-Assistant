@@ -1,12 +1,3 @@
-"""
-Library MCP Server — FastMCP
-
-Two tools:
-  - get_library_info: static MGCL facts, read from local data/library.json
-  - search_books: live query against the Open Library API (openlibrary.org),
-                  cached in-memory for 5 minutes per query
-"""
-
 import json
 import time
 from pathlib import Path
@@ -65,7 +56,7 @@ def search_books(query: str) -> dict[str, Any]:
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        return {"error": f"Failed to reach Open Library: {e}", "query": query}
+        return {"error": f"Failed to reach Library: {e}", "query": query}
 
     data = response.json()
     docs = data.get("docs", [])
