@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 from typing import Any, Optional
@@ -29,6 +30,21 @@ vectorstore = Chroma(
 )
 
 mcp = FastMCP("academics-mcp-server")
+
+
+def _load_academic_facts() -> dict:
+    facts_path = PROJECT_ROOT / "data" / "academic_facts.json"
+    with facts_path.open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+@mcp.tool
+def get_academic_facts() -> dict:
+    """Get static academic information: the academic calendar, holiday list,
+    branch-change CGPA cutoffs, quirky/informal campus rules, general academic
+    policy (grading, attendance, credits), and Spark Fellowship details.
+    This information rarely changes within a semester."""
+    return _load_academic_facts()
 
 
 @mcp.tool
@@ -84,17 +100,11 @@ def search_program_structure(
             "note": "No documents matched the given filters.",
         }
 
-    if where_filter is None:
-        confident_matches = [
-            {"text": doc.page_content, "metadata": doc.metadata, "relevanceScore": score}
-            for doc, score in results
-            if score >= RELEVANCE_FLOOR
-        ]
-    else:
-        confident_matches = [
-            {"text": doc.page_content, "metadata": doc.metadata, "relevanceScore": score}
-            for doc, score in results
-        ]
+    confident_matches = [
+        {"text": doc.page_content, "metadata": doc.metadata, "relevanceScore": score}
+        for doc, score in results
+        if score >= RELEVANCE_FLOOR
+    ]
 
     if not confident_matches:
         return {

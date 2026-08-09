@@ -84,6 +84,15 @@ async function main() {
     }
   });
 
+  app.get("/api/dashboard/academics", async (_req, res) => {
+    try {
+      const raw = await callMcpTool("get_academic_facts", {});
+      res.json(JSON.parse(raw));
+    } catch (err) {
+      res.status(502).json({ error: (err as Error).message });
+    }
+  });
+
   app.get("/health", (_req, res) => {
     res.json({ status: "ok", toolsAvailable: allTools.length });
   });
@@ -91,7 +100,7 @@ async function main() {
   app.listen(PORT, () => {
     console.log(`Orchestrator listening on http://localhost:${PORT}`);
     console.log(`  Chat endpoint (SSE): POST http://localhost:${PORT}/api/chat`);
-    console.log(`  Dashboard endpoints: GET /api/dashboard/{library,todays-menu,events}`);
+    console.log(`  Dashboard endpoints: GET /api/dashboard/{library,todays-menu,events,academics}`);
   });
 }
 
