@@ -60,7 +60,7 @@
       "id": "club_001",
       "clubName": "SDSLabs",
       "eventName": "DevTalk: Intro to Next.js & Web3",
-      "date": "2026-06-20",
+      "date": "2026-08-15",
       "time": "6:00 PM",
       "venue": "MAC Auditorium",
       "description": "Learn the fundamentals of Next.js App Router and how it connects to decentralized apps. Open to all branches."
@@ -69,7 +69,7 @@
       "id": "club_002",
       "clubName": "PAG (Programming Guild)",
       "eventName": "Algorejo (Competitive Coding Contest)",
-      "date": "2026-06-21",
+      "date": "2026-08-17",
       "time": "9:00 PM",
       "venue": "Online (HackerEarth)",
       "description": "A 3-hour competitive coding challenge designed specifically for beginners to test data structures knowledge."
@@ -78,7 +78,7 @@
       "id": "club_003",
       "clubName": "InfoSec IITR",
       "eventName": "Freshman CTF (Capture The Flag)",
-      "date": "2026-06-27",
+      "date": "2026-08-21",
       "time": "12:00 PM",
       "venue": "Online / LHC Room",
       "description": "Jeopardy-style security hacking contest covering cryptography, web security, and reverse engineering."
@@ -87,7 +87,7 @@
       "id": "club_004",
       "clubName": "Choreography Section",
       "eventName": "Open Dance Workshop",
-      "date": "2026-06-22",
+      "date": "2026-08-19",
       "time": "5:30 PM",
       "venue": "MAC Dance Room",
       "description": "Free intermediate hip-hop and contemporary dance session. No prior experience required."

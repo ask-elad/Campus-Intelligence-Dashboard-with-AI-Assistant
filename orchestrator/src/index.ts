@@ -15,6 +15,13 @@ async function main() {
   app.use(cors());
   app.use(express.json());
 
+  // Diagnostic logging — temporary, helps trace exactly which requests
+  // reach the server and which get cancelled before arriving.
+  app.use((req, _res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+    next();
+  });
+
   app.post("/api/chat", async (req, res) => {
     const { sessionId, message } = req.body as { sessionId?: string; message?: string };
 
@@ -52,9 +59,32 @@ async function main() {
     }
   });
 
+  app.get("/api/dashboard/library/search", async (req, res) => {
+    const query = req.query.q as string | undefined;
+    if (!query) {
+      res.status(400).json({ error: "Query parameter 'q' is required" });
+      return;
+    }
+    try {
+      const raw = await callMcpTool("search_books", { query });
+      res.json(JSON.parse(raw));
+    } catch (err) {
+      res.status(502).json({ error: (err as Error).message });
+    }
+  });
+
   app.get("/api/dashboard/todays-menu", async (_req, res) => {
     try {
       const raw = await callMcpTool("get_todays_menu", {});
+      res.json(JSON.parse(raw));
+    } catch (err) {
+      res.status(502).json({ error: (err as Error).message });
+    }
+  });
+
+  app.get("/api/dashboard/cafeteria/eateries", async (_req, res) => {
+    try {
+      const raw = await callMcpTool("search_eateries", { query: "" });
       res.json(JSON.parse(raw));
     } catch (err) {
       res.status(502).json({ error: (err as Error).message });
@@ -100,7 +130,9 @@ async function main() {
   app.listen(PORT, () => {
     console.log(`Orchestrator listening on http://localhost:${PORT}`);
     console.log(`  Chat endpoint (SSE): POST http://localhost:${PORT}/api/chat`);
-    console.log(`  Dashboard endpoints: GET /api/dashboard/{library,todays-menu,events,academics}`);
+    console.log(
+      `  Dashboard endpoints: GET /api/dashboard/{library,library/search,todays-menu,cafeteria/eateries,events,academics}`
+    );
   });
 }
 
