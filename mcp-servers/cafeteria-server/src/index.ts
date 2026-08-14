@@ -141,7 +141,10 @@ function isInitializeRequest(body: unknown): boolean {
   return typeof body === "object" && body !== null && (body as any).method === "initialize";
 }
 
-const app = createMcpExpressApp();
+const app = createMcpExpressApp({
+  host: "0.0.0.0",
+  allowedHosts: process.env.ALLOWED_HOSTS?.split(",") ?? ["localhost"]
+});
 
 app.post("/mcp", async (req, res) => {
   const sessionId = req.headers["mcp-session-id"] as string | undefined;
