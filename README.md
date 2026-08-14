@@ -11,9 +11,10 @@ deliberately and each piece tested before the next was added. The sections
 below explain not just what this is, but why it's built the way it is.
 
 ## Live
-
+ 
+| | |
 |---|---|
-| **Dashboard (frontend)** | https://campusbrains.vercel.app/ |
+| **Dashboard (frontend)** |  https://campusbrains.vercel.app/|
 | **Orchestrator API** | https://campus-orchestrator.onrender.com |
 | **Events MCP server** | https://campus-events-mcp-glba.onrender.com |
 | **Cafeteria MCP server** | https://campus-cafeteria-cqx7.onrender.com |
