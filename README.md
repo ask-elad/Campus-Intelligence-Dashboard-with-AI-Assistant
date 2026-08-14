@@ -163,7 +163,3 @@ Being upfront about these rather than letting someone discover them:
   pilot set. Adding a branch means dropping a correctly-named PDF into
   `academics-server/data/raw_pdfs/` and re-running the ingestion script —
   no code changes required, but it is a manual step.
-- **Library search reflects a general public book catalog** (Open
-  Library), not MGCL's actual real-time holdings — MGCL's own catalog
-  system disallows automated access, so this is the honest scope of what
-  "search books" means here.
