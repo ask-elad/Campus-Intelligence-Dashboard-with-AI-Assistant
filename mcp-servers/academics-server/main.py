@@ -126,4 +126,11 @@ def search_program_structure(
 
 
 if __name__ == "__main__":
-    mcp.run(transport="http", host="127.0.0.1", port=5006, path="/mcp")
+    import os
+
+    mcp.run(
+        transport="http",
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5006)),
+        path="/mcp",
+    )
