@@ -4,12 +4,12 @@ import cors from "cors";
 import { connectAllServers, callMcpTool } from "./mcp/clients.js";
 import { runAgentLoopStreaming } from "./agent.js";
 import { getSession } from "./sessions.js";
+import type { DiscoveredTool } from "./types.js";
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 5000;
 
 async function main() {
-  const allTools = await connectAllServers();
-  console.log(`\nOrchestrator ready — ${allTools.length} tools available.\n`);
+  const allTools: DiscoveredTool[] = [];
 
   const app = express();
   app.use(cors());
@@ -134,6 +134,10 @@ async function main() {
       `  Dashboard endpoints: GET /api/dashboard/{library,library/search,todays-menu,cafeteria/eateries,events,academics}`
     );
   });
+
+  // Connect to MCP servers after the HTTP server has started.
+  // Failed connections will be retried automatically.
+  await connectAllServers(allTools);
 }
 
 main();

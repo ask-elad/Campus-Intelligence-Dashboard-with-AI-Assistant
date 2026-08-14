@@ -13,6 +13,9 @@ const SERVERS: McpServerConfig[] = [
 // toolName -> the connected Client instance that owns it.
 export const toolRoutingTable = new Map<string, Client>();
 
+// Keep track of servers that have successfully connected.
+const connectedServers = new Set<string>();
+
 async function connectOneServer(server: McpServerConfig): Promise<DiscoveredTool[]> {
   if (!server.url) {
     console.warn(`  [${server.name}] SKIPPED — no URL configured in .env`);
@@ -29,6 +32,7 @@ async function connectOneServer(server: McpServerConfig): Promise<DiscoveredTool
     console.log(`  [${server.name}] connected — ${tools.length} tools`);
 
     const discovered: DiscoveredTool[] = [];
+
     for (const tool of tools) {
       toolRoutingTable.set(tool.name, client);
 
@@ -40,6 +44,8 @@ async function connectOneServer(server: McpServerConfig): Promise<DiscoveredTool
       });
     }
 
+    connectedServers.add(server.name);
+
     return discovered;
   } catch (err) {
     console.error(`  [${server.name}] FAILED to connect:`, (err as Error).message);
@@ -47,15 +53,46 @@ async function connectOneServer(server: McpServerConfig): Promise<DiscoveredTool
   }
 }
 
-/**
- * Connects to all configured MCP servers concurrently, populates the
- * module-level toolRoutingTable, and returns the combined flat list of
- * every discovered tool (used to build Groq's tool-definitions payload).
- */
-export async function connectAllServers(): Promise<DiscoveredTool[]> {
+export async function connectAllServers(
+  allTools: DiscoveredTool[]
+): Promise<void> {
   console.log("Connecting to all MCP servers...\n");
+
   const results = await Promise.all(SERVERS.map(connectOneServer));
-  return results.flat();
+  allTools.push(...results.flat());
+
+  console.log(`\nOrchestrator ready — ${allTools.length} tools available.\n`);
+
+  // Retry MCP servers that failed to connect.
+  setInterval(async () => {
+    const disconnectedServers = SERVERS.filter(
+      (server) => server.url && !connectedServers.has(server.name)
+    );
+
+    if (disconnectedServers.length === 0) {
+      return;
+    }
+
+    console.log(
+      `Retrying MCP servers: ${disconnectedServers
+        .map((server) => server.name)
+        .join(", ")}`
+    );
+
+    const results = await Promise.all(
+      disconnectedServers.map(connectOneServer)
+    );
+
+    const newTools = results.flat();
+
+    if (newTools.length > 0) {
+      allTools.push(...newTools);
+
+      console.log(
+        `MCP reconnect successful — ${allTools.length} tools available.`
+      );
+    }
+  }, 30_000);
 }
 
 /**
@@ -70,12 +107,24 @@ export async function callMcpTool(
   args: Record<string, unknown>
 ): Promise<string> {
   const client = toolRoutingTable.get(toolName);
+
   if (!client) {
     throw new Error(`No server found for tool "${toolName}"`);
   }
 
-  const result = await client.callTool({ name: toolName, arguments: args });
-  const content = result.content as Array<{ type: string; text?: string }>;
-  const textParts = content.filter((c) => c.type === "text").map((c) => c.text ?? "");
+  const result = await client.callTool({
+    name: toolName,
+    arguments: args,
+  });
+
+  const content = result.content as Array<{
+    type: string;
+    text?: string;
+  }>;
+
+  const textParts = content
+    .filter((c) => c.type === "text")
+    .map((c) => c.text ?? "");
+
   return textParts.join("\n");
 }
