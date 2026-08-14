@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: var(--t-bg);
+  --color-surface: var(--t-surface);
+  --color-surface-raised: var(--t-surface-raised);
+  --color-border: var(--t-border);
+  --color-border-soft: var(--t-border-soft);
+
+  --color-ink: var(--t-ink);
+  --color-ink-muted: var(--t-ink-muted);
+  --color-ink-faint: var(--t-ink-faint);
+
+  --color-brass: var(--t-brass);
+  --color-brass-soft: var(--t-brass-soft);
+  --color-brass-dim: var(--t-brass-dim);
+
+  --color-library: var(--t-library);
+  --color-cafeteria: var(--t-cafeteria);
+  --color-events: var(--t-events);
+  --color-academics: var(--t-academics);
+
+  --color-danger: var(--t-danger);
+  --color-danger-soft: var(--t-danger-soft);
+  --color-danger-border: var(--t-danger-border);
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+/* Dark palette — default */
+:root {
+  --t-bg: #0c1620;
+  --t-surface: #131f2d;
+  --t-surface-raised: #182636;
+  --t-border: #2a3c50;
+  --t-border-soft: #21303f;
+
+  --t-ink: #e9ecf0;
+  --t-ink-muted: #8697a8;
+  --t-ink-faint: #566374;
+
+  --t-brass: #c69158;
+  --t-brass-soft: #c691581f;
+  --t-brass-dim: #8a6438;
+
+  --t-library: #9c90d9;
+  --t-cafeteria: #7cb597;
+  --t-events: #dd8f68;
+  --t-academics: #6fa6c4;
+
+  --t-danger: #e0917a;
+  --t-danger-soft: #3a201c;
+  --t-danger-border: #5a352c;
+}
+
+/* Light palette — warm paper, not stark white, same accent identity */
+:root:not(.dark) {
+  --t-bg: #fcfbf8;
+  --t-surface: #ffffff;
+  --t-surface-raised: #f5f2eb;
+  --t-border: #e4ddd0;
+  --t-border-soft: #ece7dc;
+
+  --t-ink: #211c14;
+  --t-ink-muted: #6b6355;
+  --t-ink-faint: #9a927f;
+
+  --t-brass: #a8703a;
+  --t-brass-soft: #a8703a17;
+  --t-brass-dim: #c69158;
+
+  --t-library: #6c5fc4;
+  --t-cafeteria: #4c8a6c;
+  --t-events: #c06a3f;
+  --t-academics: #37749a;
+
+  --t-danger: #b8503b;
+  --t-danger-soft: #fbeae5;
+  --t-danger-border: #e8c3b6;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      linear-gradient(var(--color-border-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-border-soft) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: -1px -1px;
+    background-attachment: fixed;
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+
+  ::selection {
+    background-color: var(--color-brass-soft);
+    color: var(--color-ink);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+  *::-webkit-scrollbar { width: 8px; height: 8px; }
+  *::-webkit-scrollbar-thumb { background-color: var(--color-border); border-radius: 999px; }
+
+  :focus-visible { outline: 2px solid var(--color-brass); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .corner-ticks { position: relative; }
+  .corner-ticks::before,
+  .corner-ticks::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  .corner-ticks::before {
+    top: -1px; left: -1px;
+    border-top: 1.5px solid var(--color-brass);
+    border-left: 1.5px solid var(--color-brass);
+  }
+  .corner-ticks::after {
+    bottom: -1px; right: -1px;
+    border-bottom: 1.5px solid var(--color-brass);
+    border-right: 1.5px solid var(--color-brass);
+  }
+
+  .fade-in { animation: fadeIn 320ms ease-out both; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .shimmer {
+    background: linear-gradient(100deg, var(--color-surface-raised) 30%, var(--color-border-soft) 50%, var(--color-surface-raised) 70%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: 150% 0; }
+    100% { background-position: -50% 0; }
+  }
+}
