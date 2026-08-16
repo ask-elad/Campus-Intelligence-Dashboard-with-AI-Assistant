@@ -1,5 +1,5 @@
-import { Client } from "@modelcontextprotocol/client";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import type { McpServerConfig, DiscoveredTool } from "../types.js";
 
 const SERVERS: McpServerConfig[] = [
@@ -26,7 +26,7 @@ async function connectOneServer(server: McpServerConfig): Promise<DiscoveredTool
   const transport = new StreamableHTTPClientTransport(new URL(server.url));
 
   try {
-    await client.connect(transport);
+    await client.connect(transport as any);
     const { tools } = await client.listTools();
 
     console.log(`  [${server.name}] connected — ${tools.length} tools`);
@@ -95,13 +95,6 @@ export async function connectAllServers(
   }, 30_000);
 }
 
-/**
- * Calls a tool on whichever MCP server owns it (via toolRoutingTable),
- * and returns its raw text content, joined. Throws if the tool name is
- * unknown or the call fails — callers decide how to handle that
- * (agent.ts catches and returns an error string to the LLM; the
- * dashboard routes catch and return an HTTP error).
- */
 export async function callMcpTool(
   toolName: string,
   args: Record<string, unknown>
