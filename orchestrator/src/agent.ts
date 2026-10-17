@@ -16,6 +16,21 @@ async function callMcpTool(toolName: string, args: Record<string, unknown>): Pro
   }
 }
 
+function parseToolArgs(
+  raw: string | undefined
+): { ok: true; args: Record<string, unknown> } | { ok: false; error: string } {
+  if (!raw) return { ok: true, args: {} };
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return { ok: true, args: parsed as Record<string, unknown> };
+    }
+    return { ok: false, error: "tool arguments must be a JSON object" };
+  } catch (err) {
+    return { ok: false, error: `invalid JSON in tool arguments: ${(err as Error).message}` };
+  }
+}
+
 export async function runAgentLoop(
   userMessage: string,
   allTools: DiscoveredTool[]
@@ -53,8 +68,10 @@ export async function runAgentLoop(
     }
 
     for (const toolCall of toolCalls) {
-      const args = JSON.parse(toolCall.function.arguments || "{}");
-      const resultText = await callMcpTool(toolCall.function.name, args);
+      const parsed = parseToolArgs(toolCall.function.arguments);
+      const resultText = parsed.ok
+        ? await callMcpTool(toolCall.function.name, parsed.args)
+        : `Error: ${parsed.error}`;
 
       messages.push({
         role: "tool",
@@ -71,6 +88,7 @@ export type AgentEvent =
   | { type: "token"; text: string }
   | { type: "tool_call"; toolName: string }
   | { type: "tool_result"; toolName: string }
+  | { type: "error"; code: string; message: string }
   | { type: "done" };
 
 export async function* runAgentLoopStreaming(
@@ -135,8 +153,10 @@ export async function* runAgentLoopStreaming(
 
       for (const tc of toolCallsArray) {
         yield { type: "tool_call", toolName: tc.name };
-        const args = JSON.parse(tc.arguments || "{}");
-        const resultText = await callMcpTool(tc.name, args);
+        const parsed = parseToolArgs(tc.arguments);
+        const resultText = parsed.ok
+          ? await callMcpTool(tc.name, parsed.args)
+          : `Error: ${parsed.error}`;
         yield { type: "tool_result", toolName: tc.name };
 
         messages.push({
@@ -153,6 +173,10 @@ export async function* runAgentLoopStreaming(
     return;
   }
 
-  yield { type: "token", text: "\n\nSorry, I wasn't able to complete this after several tool calls." };
+  yield {
+    type: "error",
+    code: "max_iterations",
+    message: `Reached the tool-call limit (${MAX_TOOL_ITERATIONS}) without a final answer.`,
+  };
   yield { type: "done" };
 }

@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+venv
+.venv
+__pycache__
+*.pyc
+mcp-servers/academics-server/data
+mcp-servers/library-server/data
+mcp-servers/*/data/**/*.json
+package-lock.json

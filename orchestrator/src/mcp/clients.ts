@@ -1,6 +1,7 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import type { McpServerConfig, DiscoveredTool } from "../types.js";
+import { log } from "../log.js";
 
 const SERVERS: McpServerConfig[] = [
   { name: "events", url: process.env.EVENTS_MCP_URL || "" },
@@ -18,7 +19,7 @@ const connectedServers = new Set<string>();
 
 async function connectOneServer(server: McpServerConfig): Promise<DiscoveredTool[]> {
   if (!server.url) {
-    console.warn(`  [${server.name}] SKIPPED — no URL configured in .env`);
+    log.warn("mcp.skip", { server: server.name, reason: "no URL configured" });
     return [];
   }
 
@@ -26,10 +27,15 @@ async function connectOneServer(server: McpServerConfig): Promise<DiscoveredTool
   const transport = new StreamableHTTPClientTransport(new URL(server.url));
 
   try {
+    // The MCP SDK (@modelcontextprotocol/sdk 1.26.0) ships two overlapping
+    // Transport interfaces across its subpath exports; the streamable-HTTP
+    // transport is structurally compatible but doesn't nominally extend the
+    // one Client.connect accepts. Cast is scoped to this single call.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await client.connect(transport as any);
     const { tools } = await client.listTools();
 
-    console.log(`  [${server.name}] connected — ${tools.length} tools`);
+    log.info("mcp.connected", { server: server.name, tools: tools.length });
 
     const discovered: DiscoveredTool[] = [];
 
@@ -48,7 +54,10 @@ async function connectOneServer(server: McpServerConfig): Promise<DiscoveredTool
 
     return discovered;
   } catch (err) {
-    console.error(`  [${server.name}] FAILED to connect:`, (err as Error).message);
+    log.error("mcp.connect_failed", {
+      server: server.name,
+      error: (err as Error).message,
+    });
     return [];
   }
 }
@@ -56,12 +65,12 @@ async function connectOneServer(server: McpServerConfig): Promise<DiscoveredTool
 export async function connectAllServers(
   allTools: DiscoveredTool[]
 ): Promise<void> {
-  console.log("Connecting to all MCP servers...\n");
+  log.info("mcp.connecting_all");
 
   const results = await Promise.all(SERVERS.map(connectOneServer));
   allTools.push(...results.flat());
 
-  console.log(`\nOrchestrator ready — ${allTools.length} tools available.\n`);
+  log.info("mcp.ready", { tools: allTools.length });
 
   // Retry MCP servers that failed to connect.
   setInterval(async () => {
@@ -73,24 +82,19 @@ export async function connectAllServers(
       return;
     }
 
-    console.log(
-      `Retrying MCP servers: ${disconnectedServers
-        .map((server) => server.name)
-        .join(", ")}`
-    );
+    log.info("mcp.retry", {
+      servers: disconnectedServers.map((s) => s.name),
+    });
 
-    const results = await Promise.all(
+    const retryResults = await Promise.all(
       disconnectedServers.map(connectOneServer)
     );
 
-    const newTools = results.flat();
+    const newTools = retryResults.flat();
 
     if (newTools.length > 0) {
       allTools.push(...newTools);
-
-      console.log(
-        `MCP reconnect successful — ${allTools.length} tools available.`
-      );
+      log.info("mcp.reconnect_success", { tools: allTools.length });
     }
   }, 30_000);
 }

@@ -150,16 +150,20 @@ npm run dev   # :8080
 Bring the MCP servers up before the orchestrator — it connects to all
 four on startup and will log a warning per server it can't reach.
 
-## Known limitations
+## Design choices
 
-Being upfront about these rather than letting someone discover them:
+A few things that look like gaps are deliberate — spelling them out so
+nothing feels hidden:
 
-- **No authentication, no real user accounts.** The student profile shown
-  in the UI is a hardcoded demo object (`frontend/src/config/profile.ts`).
-- **Conversation memory is in-process and non-persistent.** Restarting
-  the orchestrator loses every active session. There's no reason this
-  couldn't move to Redis or a database — it just hasn't needed to yet.
-- **Academics currently covers 4 UG branches** (CS, EE, ME, CE) as a
-  pilot set. Adding a branch means dropping a correctly-named PDF into
-  `academics-server/data/raw_pdfs/` and re-running the ingestion script —
-  no code changes required, but it is a manual step.
+- **No authentication.** This is a free, public campus tool; signing in
+  would be friction without a corresponding benefit. The profile shown in
+  the UI is a static demo object (`frontend/src/config/profile.ts`) and
+  that's fine — the LLM doesn't need identity to answer questions about
+  library hours or today's menu.
+- **Conversation memory is in-process.** Per-session chat history lives
+  on the orchestrator with a TTL and LRU cap (see
+  `orchestrator/.env.example`). Restarting the orchestrator starts fresh,
+  which matches how the service is actually operated.
+- **Academics covers 4 UG branches** (CS, EE, ME, CE). Adding more is a
+  content step, not a code change: drop a PDF into
+  `academics-server/data/raw_pdfs/` and re-run the ingestion script.

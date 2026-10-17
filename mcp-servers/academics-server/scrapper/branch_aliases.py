@@ -18,6 +18,8 @@ def resolve_branch(raw_input: str) -> str | None:
     to its canonical key, or None if it doesn't match anything known.
     """
     normalized = normalize(raw_input)
+    if not normalized:
+        return None
 
     for canonical, aliases in BRANCH_ALIASES.items():
         if normalized in aliases:
